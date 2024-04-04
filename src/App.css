@@ -13,3 +13,7 @@
   text-align: center;
   background-color: blanchedalmond;
 }
+
+.payment-container {
+  overflow-y: scroll;
+}
