@@ -24,9 +24,9 @@ const Dropdown = ({ children, title, totalItems }) => {
 
   return (
     <div className="mb-4">
-      <div className="mx-[-16px]">
+      <div className="payment-container">
         <button
-          className={`lg:w-[800px] md:w-[500px] sm:w-[300px] flex justify-between items-center px-8 py-4 text-xl font-semibold ${isOpen ? 'text-gray-800 bg-gray-300' : 'text-gray-800 bg-gray-200'} border-2 border-gray-400 rounded-lg hover:bg-gray-300`}
+          className={`lg:w-[1100px] md:w-[500px] sm:w-[300px] flex justify-between items-center px-8 py-4 text-xl font-semibold ${isOpen ? 'text-gray-800 bg-gray-300' : 'text-gray-800 bg-gray-200'} border-2 border-gray-400 rounded-lg hover:bg-gray-300`}
         >
           {isOpen ? title : `${title} (${totalItems})`}
           <span className="text-2xl transition-transform duration-300"

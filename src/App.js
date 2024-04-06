@@ -33,7 +33,7 @@ function App() {
 
   const handleScroll = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop === clientHeight) { 
+    if (scrollHeight - scrollTop <= clientHeight + 5) { 
       setDisplayedData(prevDisplayedData => {
         const moreData = mockData.filter(
           (item) =>
@@ -42,6 +42,7 @@ function App() {
             item.amount.includes(filter) ||
             item.status.toLowerCase().includes(filter.toLowerCase())
         ).slice(prevDisplayedData.length, prevDisplayedData.length + itemsPerPage); 
+
         return [...prevDisplayedData, ...moreData];
       });
     }
@@ -50,7 +51,7 @@ function App() {
   const estimatedItemHeight = 57;
  
   const maxTableHeight = displayedData.length > itemsPerPage
-    ? `${(itemsPerPage * estimatedItemHeight) + (estimatedItemHeight / 2)}px` // 假设显示半条数据的高度作为提示
+    ? `${(itemsPerPage * estimatedItemHeight) + (estimatedItemHeight / 2)}px` 
     : `${displayedData.length * estimatedItemHeight}px`;
 
   return (
@@ -78,7 +79,7 @@ function App() {
           <Dropdown title="Payment History" totalItems={totalItems}>
             <div className="payment-container overflow-auto mx-10 mt-[-8px]"  
                   onScroll={handleScroll} 
-                  style={{ maxHeight: "605px" }}>
+                  style={{ maxHeight: "680px" }}>
               <table className="payment-table min-w-full divide-y divide-gray-300" 
                     style={{ width: "calc(100% - 1rem)" }}>
                 <thead className="payment-head bg-gray-300">
