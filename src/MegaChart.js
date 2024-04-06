@@ -195,7 +195,7 @@ const MegaChart = ({ data }) => {
               if (d === 'outgoing') return yLeftScale(closestData.outgoing);
               if (d === 'balance') return yRightScale(closestData.balance);
             });
-  
+
           updateTooltipContent(closestData, x, yLeftScale(Math.max(closestData.incoming, closestData.outgoing, 0)));
       } else {
           focusLineGroup.style('display', 'none');
@@ -209,10 +209,17 @@ const MegaChart = ({ data }) => {
       let tooltipX = xPosition + 10; 
       const tooltipY = yPosition - tooltipHeight / 2;
 
-      if (tooltipX + tooltipWidth > width) {
-          tooltipX = width - tooltipWidth - 20; 
-      }
+      // if (xPosition < width * 0.4) {
+      //   tooltipX = xPosition + 20; 
+      // } else {
+      //     if (tooltipX + tooltipWidth > width) {
+      //         tooltipX = xPosition - tooltipWidth - 20; 
+      //     }
+      // }
 
+      // if (tooltipX + tooltipWidth > width) {
+          tooltipX = width - tooltipWidth - 20; 
+      // }
         tooltip.style("opacity", 1)
         .attr("transform", `translate(${tooltipX -200}  ,200)`);
 
@@ -322,7 +329,7 @@ const MegaChart = ({ data }) => {
     <>
       <svg ref={svgRef} style={{ width: "100%", height: "100%" }}></svg>
     </>
-    );
+  );
 }
 
 export default MegaChart;

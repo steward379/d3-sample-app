@@ -1,5 +1,3 @@
-
-
 # 執行專案 d3-sample-app Process
 
 - 使用 Create-React-App
@@ -18,12 +16,14 @@
 - 建立交易測試資料供左一，左二圖表使用
 - 建立左一折線圖表
 
+  - 找到高度類似範例 [Line chart with tooltip / D3 | Observable (observablehq.com)](https://observablehq.com/@d3/line-with-tooltip/2?intent=fork)
   - 建立基本折線圖
   - 建立 Tooltip 與圓點，並註明位數
   - 去除 X 軸，Y 軸線條
   - 減少 tick 標註字樣
 - 建立左二試管圖表
 
+  - 
   - 建立背景長條圖、實質長條圖
   - 標註字樣
   - 建立總數計算之圖例，並註明位數
@@ -36,6 +36,8 @@
 - 建立總體交易測試資料
 - 建立右邊複雜人口圖表變體與折線圖集合
 
+  - 找到原圖為 [(3) FMCPAY on X: &#34;UPDATE ON THE 24-HOUR CRYPTO MARKET (20/2) $BTC is currently forming a short-term peak, and the potential for future growth is expected to weaken, giving way to ETH and altcoins. $ETH is approaching the $3000 mark, breaking through this level will trigger a larger fomo wave for… https://t.co/QCEfGMgz1Z&#34; / X (twitter.com)](https://twitter.com/FMCPay/status/1759765923215614006)
+  - 查看人口圖 [https://doylek.github.io/D3-Population-Pyramid/](https://doylek.github.io/D3-Population-Pyramid/)
   - 建立向上與向下生長之長條圖，從中間開始計算
   - 建立複數 Y 軸
   - 建立折線圖，對照時間產生 tick
