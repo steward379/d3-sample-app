@@ -71,7 +71,8 @@ const MegaChart = ({ data }) => {
       .attr('y1', margin.top)
       .attr('y2', height - margin.bottom)
       .attr('stroke', 'white')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .raise();
 
     const focusCircleGroup = svg.append('g')
       .attr('class', 'focus-circle-group')
@@ -82,21 +83,24 @@ const MegaChart = ({ data }) => {
       .attr('class', 'circle incoming')
       .style('fill', '#7a88f2')
       .attr('stroke', 'white')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .raise();
 
     focusCircleGroup.append('circle')
       .attr('r', 4.5)
       .attr('class', 'circle outgoing')
       .style('fill', '#89d0ca')
       .attr('stroke', 'white')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .raise();
 
     focusCircleGroup.append('circle')
       .attr('r', 4.5)
       .attr('class', 'circle balance')
       .style('fill', '#c8a837')
       .attr('stroke', 'white')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .raise();
 
     const timeRange = d3.extent(data, d => d.date);
     const timeDiff = timeRange[1] - timeRange[0];
