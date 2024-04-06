@@ -213,39 +213,38 @@ const MegaChart = ({ data }) => {
 
     function updateTooltipContent(data, xPosition, yPosition) {
 
-      let tooltipX = xPosition + 10; 
-      const tooltipY = yPosition - tooltipHeight / 2;
+      const xPos = xScale(data.date); 
+      let tooltipX = xPos + 20;
 
-      // if (xPosition < width * 0.4) {
-      //   tooltipX = xPosition + 20; 
-      // } else {
-      //     if (tooltipX + tooltipWidth > width) {
-      //         tooltipX = xPosition - tooltipWidth - 20; 
-      //     }
-      // }
-
-      // if (tooltipX + tooltipWidth > width) {
-          tooltipX = width - tooltipWidth - 20; 
-      // }
-        tooltip.style("opacity", 1)
-        .attr("transform", `translate(${tooltipX -200}  ,200)`);
-
-        tooltip.select('.date').text(`${d3.timeFormat("%b %d, %Y")(data.date)}`);
-        tooltip.select('.incoming').text(`Incoming: ${data.incoming} B`);
-        tooltip.select('.outgoing').text(`Outgoing: ${data.outgoing} B`);
-        tooltip.select('.balance').text(`Balance: ${data.balance} B`);
-
-        tooltip.select('rect')
-        .attr('width', tooltipWidth)
-        .attr('height', tooltipHeight);
+      if (tooltipX + tooltipWidth > width) {
+        tooltipX = xPos - tooltipWidth - 20; 
       }
 
-      tooltip.append("rect")
-       .attr('class', 'tooltip-rect')
-       .attr('width', tooltipWidth)
-       .attr('height', tooltipHeight)
-       .attr('fill', 'white')
-       .style('opacity', 0.8);
+      if (tooltipX < 0) {
+        tooltipX = xPos + 20;
+      }
+
+      const tooltipY = 150;
+
+        tooltip.style("opacity", 1)
+                .attr("transform", `translate(${tooltipX},${tooltipY})`);
+
+        tooltip.select('.date').text(`${d3.timeFormat("%b %d, %Y")(data.date)}`);
+        tooltip.select('.incoming').text(`Incoming: ${data.incoming} `);
+        tooltip.select('.outgoing').text(`Outgoing: ${data.outgoing} `);
+        tooltip.select('.balance').text(`Balance: ${data.balance} `);
+
+        tooltip.select('rect')
+          .attr('width', tooltipWidth)
+          .attr('height', tooltipHeight);
+      }
+
+      // tooltip.append("rect")
+      //  .attr('class', 'tooltip-rect')
+      //  .attr('width', tooltipWidth)
+      //  .attr('height', tooltipHeight)
+      //  .attr('fill', 'white')
+      //  .style('opacity', 0.8);
 
       function onMouseOver(event, d) {
 
