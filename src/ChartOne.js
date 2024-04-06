@@ -2,78 +2,60 @@ import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const ChartOne = ({ aapl }) => {
-    const svgRef = useRef();
+  const svgRef = useRef();
   
-    useEffect(() => {
-      if(!aapl.length) return;
+  useEffect(() => {
+    if (!aapl.length) return;
 
-      const svg = d3.select(svgRef.current);
-      svg.selectAll("*").remove(); 
-  
-      const width = 928;
-      const height = 500;
-      const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-  
-      // ratio
-      const x = d3.scaleUtc()
-        .domain(d3.extent(aapl, d => new Date(d.Date)))
-        .range([margin.left, width - margin.right]);
-  
-      const y = d3.scaleLinear()
-        .domain([0, d3.max(aapl, d => d.Transactions)])
-        .range([height - margin.bottom, margin.top]);
-  
-      const line = d3.line()
-        .x(d => x(new Date(d.Date)))
-        .y(d => y(d.Transactions));
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove(); 
 
-      // viewBox
-      svg.attr("viewBox", [0, 0, width, height])
-        .attr("width", width)
-        .attr("height", height)
-        .style("overflow", "visible");
-    
-      svg.append("path")
-        .datum(aapl)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
-        .attr("d", line);
-  
-      const lastDate = aapl[aapl.length - 1].Date; 
+    const width = 400; 
+    const height = 200; 
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
 
-      const tickValues = [
-        d3.timeDay.offset(lastDate, -13), 
-        d3.timeDay.offset(lastDate, -7), 
-        lastDate
-      ];
+    const x = d3.scaleUtc()
+      .domain(d3.extent(aapl, d => new Date(d.Date)))
+      .range([margin.left, width - margin.right]);
 
-      // x
-      svg.append("g")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).ticks(14).tickFormat(d3.timeFormat("%b %d")))
-        .selectAll("text")  
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("transform", "rotate(-65)");
-      
-      // y
-      svg.append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).tickFormat(d => `${d / 1000}k`))
-        .call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick line").clone()
-            .attr("x2", width - margin.left - margin.right)
-            .attr("stroke-opacity", 0.1))
-        .call(g => g.append("text") 
-            .attr("x", -margin.left)
-            .attr("y", 10)
-            .attr("fill", "currentColor")
-            .attr("text-anchor", "start")
-            .text("TRANSACTION HISTORY IN 14 DAYS")); 
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(aapl, d => d.Transactions)])
+      .range([height - margin.bottom, margin.top]);
+
+    const line = d3.line()
+      .x(d => x(new Date(d.Date)))
+      .y(d => y(d.Transactions))
+      .curve(d3.curveMonotoneX); 
+
+    svg.attr("viewBox", [0, 0, width, height])
+      .style("overflow", "visible");
   
-      // tooltip
+    svg.append("path")
+      .datum(aapl)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1.5)
+      .attr("d", line);
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x)
+          .ticks(3) 
+          .tickFormat(d3.timeFormat("%b %d")))
+      .call(g => g.selectAll(".domain").remove()) 
+      .selectAll("text")  
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)");
+
+    svg.append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y).ticks(3))
+      .call(g => g.select(".domain").remove()) 
+      .call(g => g.selectAll(".tick:not(:first-of-type) line").remove()) 
+      .call(g => g.selectAll(".tick text").attr("x", -10).attr("dy", -4));
+  
       const tooltip = svg.append("g")
         .attr("class", "tooltip")
         .style("display", "none");
