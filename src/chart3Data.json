@@ -1,0 +1,6 @@
+[
+    { "name": "USDC", "value": 215, "color": "#3c72be" },
+    { "name": "BTC", "value": 130, "color": "#ddb04c" },
+    { "name": "ETH", "value": 245, "color": "#585598" },
+    { "name": "OTHER", "value": 210, "color": "#dcdce7" }
+]
