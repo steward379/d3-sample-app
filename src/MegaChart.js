@@ -185,16 +185,23 @@ const MegaChart = ({ data }) => {
 
         if (closestData && !isNaN(closestData.incoming) && !isNaN(closestData.outgoing) && !isNaN(closestData.balance) && closestData.date) {
           lastValidData = closestData; 
+          const xPos = xScale(closestData.date);
 
-          focusLineGroup.style('display', null).attr('transform', `translate(${xScale(closestData.date)},0)`);
+          focusLineGroup.style('display', null)
+                        .attr('transform', `translate(${xPos},0)`)
+                        .raise();
           focusCircleGroup.style('display', null);
+
           focusCircleGroup.selectAll('circle')
             .data(['incoming', 'outgoing', 'balance'])
+            .attr('cx', xPos)
             .attr('cy', d => {
               if (d === 'incoming') return yLeftScale(closestData.incoming);
               if (d === 'outgoing') return yLeftScale(closestData.outgoing);
               if (d === 'balance') return yRightScale(closestData.balance);
-            });
+            })
+
+          focusCircleGroup.raise();
 
           updateTooltipContent(closestData, x, yLeftScale(Math.max(closestData.incoming, closestData.outgoing, 0)));
       } else {

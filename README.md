@@ -1,10 +1,10 @@
-# 執行專案 d3-sample-app Process
+# 執行專案 d3-sample-app Coding Process
 
 - 使用 Create-React-App
 - 安裝 Tailwind CSS
 - Git 進行版本管理，盡量 Atomic
 - 建立基本板型切分
-- 建立 Payment Details 測試資料
+- 建立 Payment Details 測試資料與資料處理邏輯
 - 對接 Payment Details 測試資料，建立表格
   - 建立 LayoutOverlay 等待 3 秒後出現
   - 建立手風琴效果
@@ -13,7 +13,7 @@
 
 ### 使用 Using d3.js
 
-- 建立交易測試資料供左一，左二圖表使用
+- 建立交易 JSON 測試資料供左一，左二圖表使用
 - 建立左一折線圖表
 
   - 找到高度類似範例 [Line chart with tooltip / D3 | Observable (observablehq.com)](https://observablehq.com/@d3/line-with-tooltip/2?intent=fork)
@@ -23,11 +23,10 @@
   - 減少 tick 標註字樣
 - 建立左二試管圖表
 
-  - 
   - 建立背景長條圖、實質長條圖
   - 標註字樣
   - 建立總數計算之圖例，並註明位數
-- 建立資產統計測試資料供左三圖表使用
+- 建立資產統計 JSON 測試資料供左三圖表使用
 - 建立左三甜甜圈圖表 (Donut Chart)
 
   - 參考 [https://d3-graph-gallery.com/donut.html](https://d3-graph-gallery.com/donut.html)
