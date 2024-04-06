@@ -194,7 +194,7 @@ const MegaChart = ({ data }) => {
 
           focusCircleGroup.selectAll('circle')
             .data(['incoming', 'outgoing', 'balance'])
-            .attr('cx', xPos)
+            // .attr('cx', xPos)
             .attr('cy', d => {
               if (d === 'incoming') return yLeftScale(closestData.incoming);
               if (d === 'outgoing') return yLeftScale(closestData.outgoing);

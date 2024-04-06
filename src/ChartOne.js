@@ -56,76 +56,77 @@ const ChartOne = ({ aapl }) => {
       .call(g => g.selectAll(".tick:not(:first-of-type) line").remove()) 
       .call(g => g.selectAll(".tick text").attr("x", -10).attr("dy", -4));
   
-      const tooltip = svg.append("g")
-        .attr("class", "tooltip")
-        .style("display", "none");
+    const tooltip = svg.append("g")
+      .attr("class", "tooltip")
+      .style("display", "none");
+    
+    tooltip.append("rect")
+      .attr("width", 160) 
+      .attr("height", 60) 
+      .attr("fill", "white")
+      .style("opacity", 0.8);
+    
+    const tooltipText = tooltip.append("text")
+      .attr("x", 10)
+      .attr("dy", "1.2em")
+      .style("text-anchor", "start")
+      .attr("font-size", "12px");
+
+    const tooltipCircle = svg.append("circle")
+      .attr("r", 20)
+      .attr("fill", "grey")
+      .style("opacity", 0.5)
+      .style("display", "none");
       
-      tooltip.append("rect")
-        .attr("width", 160) 
-        .attr("height", 60) 
-        .attr("fill", "white")
-        .style("opacity", 0.8);
-      
-      const tooltipText = tooltip.append("text")
+    function updateTooltip(d) {
+      tooltipCircle.style("display", null).attr("cx", x(new Date(d.Date))).attr("cy", y(d.Transactions));
+
+      tooltip.attr("transform", `translate(${x(new Date(d.Date))},${y(d.Transactions)})`);
+      tooltip.style("display", null);
+
+      tooltipText.html(""); 
+
+      tooltipText.append("tspan")
+        .attr("x", 10)
+        .style("font-weight", "bold")
+        .text(d3.timeFormat("%A, %B %d, %Y")(new Date(d.Date)));
+
+      tooltipText.append("tspan")
         .attr("x", 10)
         .attr("dy", "1.2em")
-        .style("text-anchor", "start")
-        .attr("font-size", "12px");
+        .text(`Transactions: ${d3.format(",")(d.Transactions)}`);
 
-      const tooltipCircle = svg.append("circle")
-        .attr("r", 20)
-        .attr("fill", "grey")
-        .style("opacity", 0.5);
-      
-      function updateTooltip(d) {
-        tooltipCircle.style("display", null).attr("cx", x(new Date(d.Date))).attr("cy", y(d.Transactions));
+      tooltipText.append("tspan")
+        .attr("x", 10)
+        .attr("dy", "1.2em")
+        .text(`Price: $${d3.format(",.2f")(d.Price)}`);
+    }
 
-        tooltip.attr("transform", `translate(${x(new Date(d.Date))},${y(d.Transactions)})`);
-        tooltip.style("display", null);
-
-        tooltipText.html(""); 
-
-        tooltipText.append("tspan")
-          .attr("x", 10)
-          .style("font-weight", "bold")
-          .text(d3.timeFormat("%A, %B %d, %Y")(new Date(d.Date)));
-
-        tooltipText.append("tspan")
-          .attr("x", 10)
-          .attr("dy", "1.2em")
-          .text(`Transactions: ${d3.format(",")(d.Transactions)}`);
-
-        tooltipText.append("tspan")
-          .attr("x", 10)
-          .attr("dy", "1.2em")
-          .text(`Price: $${d3.format(",.2f")(d.Price)}`);
+    svg.on("mousemove", function(event) {
+      const [mx, my] = d3.pointer(event);
+      const pointerDate = x.invert(mx);
+      const bisector = d3.bisector(d => new Date(d.Date)).left;
+      const index = bisector(aapl, pointerDate, 1);
+      const a = aapl[index - 1];
+      const b = aapl[index];
+      const d = b && (pointerDate - a.Date > b.Date - pointerDate) ? b : a;
+      if (d) {
+        updateTooltip(d);
       }
-
-        svg.on("mousemove", function(event) {
-          const [mx, my] = d3.pointer(event);
-          const pointerDate = x.invert(mx);
-          const bisector = d3.bisector(d => new Date(d.Date)).left;
-          const index = bisector(aapl, pointerDate, 1);
-          const a = aapl[index - 1];
-          const b = aapl[index];
-          const d = b && (pointerDate - a.Date > b.Date - pointerDate) ? b : a;
-          if (d) {
-            updateTooltip(d);
-          }
-        })
-        .on("mouseover", () => {
-          tooltip.style("display", null);
-          tooltipCircle.style("display", null);
-        })
-        .on("mouseout", () => {
-          tooltip.style("display", "none");
-          tooltipCircle.style("display", "none");
-        });
+    })
+    .on("mouseover", () => {
+      tooltip.style("display", null);
+      tooltipCircle.style("display", null);
+    })
+    .on("mouseout", () => {
+      tooltip.style("display", "none");
+      tooltipCircle.style("display", "none");
+    });
             
-    }, [aapl]); 
+  }, [aapl]); 
   
-    return <svg ref={svgRef} style={{ width: "100%", height: "auto" }}></svg>;
-  };
+  return <svg ref={svgRef} style={{ width: "100%", height: "auto" }}></svg>;
+};
   
 
 export default ChartOne;
