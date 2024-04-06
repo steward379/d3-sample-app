@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
+let lastValidData = {}; 
+
 const MegaChart = ({ data }) => {
   const svgRef = useRef(null);
-  let lastValidData = {};
   
   useEffect(() => {
     if (data && data.length) {
@@ -103,16 +104,15 @@ const MegaChart = ({ data }) => {
     const barWidth = Math.max(1, (width - margin.left - margin.right) / data.length - 1);
 
     svg.selectAll(".bar.incoming")
-    .data(data)
-    .enter()
-    .append("rect")
-  .attr("class", "bar incoming")
-  .attr("x", d => xScale(d.date) - barWidth / 2)
-  .attr("y", d => Math.min(yLeftScale(0), yLeftScale(d.incoming)))
-  .attr("width", barWidth)
-  .attr("padding", 0)
-  .attr("height", d => Math.abs(yLeftScale(d.incoming) - yLeftScale(0)))
-  .attr("fill", "#7a88f2");
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar incoming")
+      .attr("x", d => xScale(d.date) - barWidth / 2)
+      .attr("y", d => Math.min(yLeftScale(0), yLeftScale(d.incoming)))
+      .attr("width", barWidth)
+      .attr("height", d => Math.abs(yLeftScale(d.incoming) - yLeftScale(0)))
+      .attr("fill", "#7a88f2");
       
     svg.selectAll(".bar.outgoing")
       .data(data)
@@ -159,45 +159,31 @@ const MegaChart = ({ data }) => {
           .attr("text-anchor", "start")
           .style("alignment-baseline", "middle");
 
-        const tooltip = svg.append("g")
-          .attr("class", "tooltip")
-          .style("opacity", 0)
-          .style("pointer-events", "none")
-          .style("position", "absolute")
-          .style("background", "white")
-          .style("border", "1px solid #ccc")
-          .style("border-radius", "5px")
-          .style("padding", "5px");
+      const tooltip = svg.append("g")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("pointer-events", "none")
+        .style("position", "absolute")
+        .style("background", "white")
+        .style("border", "1px solid #ccc")
+        .style("border-radius", "5px")
+        .style("padding", "0px");
 
-        function onMouseMove(event) {
-          const [x, y] = d3.pointer(event);
-          // const [x] = d3.pointer(event, svg.node());
-          const hoverDate = xScale.invert(x);
+    function onMouseMove(event) {
+        const [x, y] = d3.pointer(event);
+        // const [x] = d3.pointer(event, svg.node());
+        const hoverDate = xScale.invert(x);
 
-          const index = d3.bisector(d => d.date).left(data, hoverDate, 1);
-          const a = data[index - 1];
-          const b = data[index];
-          const closestData = b && (hoverDate - a.date > b.date - hoverDate) ? b : a;
-      
-          if (closestData && !isNaN(closestData.incoming) && !isNaN(closestData.outgoing)  && !isNaN(closestData.balance) && closestData.date) {
-            if (Object.keys(lastValidData).length !== 0) {
-              updateTooltipContent(lastValidData, x, y);
-            }
-          } 
-          
-          else {
-            tooltip.style("opacity", 0);
-            focusLineGroup.style('display', 'none');
-            focusCircleGroup.style('display', 'none');
-            // lastValidData = closestData; 
-            // updateTooltipContent(closestData, x, y);
-          }
-  
+        const index = d3.bisector(d => d.date).left(data, hoverDate, 1);
+        const a = data[index - 1];
+        const b = data[index];
+        const closestData = b && (hoverDate - a.date > b.date - hoverDate) ? b : a;
 
-          const tooltipX = Math.min(width - 140, x); 
-          const tooltipY = Math.min(height - 100, yLeftScale(Math.max(closestData.incoming, closestData.outgoing, 0))) - 10;
-      
+        if (closestData && !isNaN(closestData.incoming) && !isNaN(closestData.outgoing) && !isNaN(closestData.balance) && closestData.date) {
+          lastValidData = closestData; 
+
           focusLineGroup.style('display', null).attr('transform', `translate(${xScale(closestData.date)},0)`);
+          focusCircleGroup.style('display', null);
           focusCircleGroup.selectAll('circle')
             .data(['incoming', 'outgoing', 'balance'])
             .attr('cy', d => {
@@ -205,102 +191,125 @@ const MegaChart = ({ data }) => {
               if (d === 'outgoing') return yLeftScale(closestData.outgoing);
               if (d === 'balance') return yRightScale(closestData.balance);
             });
-      
-          updateTooltipContent(closestData, xScale(closestData.date), yLeftScale(Math.max(closestData.incoming, closestData.outgoing)));
-      }
-
-      function updateTooltipContent(data, xPosition, yPosition) {
-
-        const tooltipX = xPosition - tooltipWidth - 10; 
-        const tooltipY = yPosition;
   
-        const adjustedX = Math.max(margin.left, Math.min(tooltipX, width - margin.right - tooltipWidth));
-        const adjustedY = Math.max(margin.top, Math.min(tooltipY, height - margin.bottom));
-
-          tooltip.style("opacity", 1)
-                 .attr("transform", `translate(${xPosition}, 200)`);
-      
-          tooltip.select('.date').text(`${d3.timeFormat("%b %d, %Y")(data.date)}`);
-          tooltip.select('.incoming').text(`Incoming: ${data.incoming}`);
-          tooltip.select('.outgoing').text(`Outgoing: ${data.outgoing}`);
-          tooltip.select('.balance').text(`Balance: ${data.balance}`);
-      }
-
-        function onMouseOver(event, d) {
-          const [x, y] = d3.pointer(event, svg.node()); 
-          focusLineGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
-          focusCircleGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
-
-
-          focusLineGroup.attr('transform', `translate(${x},0)`);
-          focusCircleGroup.attr('transform', `translate(${x},0)`);
-          focusCircleGroup.select('.circle.incoming').attr('cy', yLeftScale(d.incoming));
-          focusCircleGroup.select('.circle.outgoing').attr('cy', yLeftScale(d.outgoing));
-          focusCircleGroup.select('.circle.balance').attr('cy', yRightScale(d.balance));
-
-          tooltip
-            .style("opacity", 1)
-            .attr("transform", `translate(${x + 10},${y - 10})`); 
-
-          tooltip.selectAll("text").remove(); 
-          tooltip.selectAll("rect").remove(); 
-        
-          tooltip.append("rect")
-            .attr("x", 0)
-            .attr("y", -40)
-            .attr("width", 120)
-            .attr("height", 60)
-            .attr("fill", "white")
-            .style("opacity", 0.7);
-        
-          tooltip.append("text")
-            .attr("x", 5)
-            .attr("y", -20)
-            .text(`${d3.timeFormat("%d %B, %Y")(d.date)}`)
-            .attr("font-size", "12px");
-        
-          tooltip.append("text")
-            .attr("x", 5)
-            .attr("y", -5)
-            .text(`Incoming: ${d.incoming}B`)
-            .attr("font-size", "12px");
-        
-          tooltip.append("text")
-            .attr("x", 5)
-            .attr("y", 10)
-            .text(`Outgoing: ${d.outgoing}B`)
-            .attr("font-size", "12px");
-        
-          tooltip.append("text")
-            .attr("x", 5)
-            .attr("y", 25)
-            .text(`Balance: ${d.balance}B`)
-            .attr("font-size", "12px");
-
-            tooltip.attr('transform', `translate(${x - 60},${yLeftScale(Math.max(d.incoming, d.outgoing)) - 80})`);
-        }
-      
-        function onMouseOut(event, d) {
+          updateTooltipContent(closestData, x, yLeftScale(Math.max(closestData.incoming, closestData.outgoing, 0)));
+      } else {
           focusLineGroup.style('display', 'none');
           focusCircleGroup.style('display', 'none');
-
           tooltip.style("opacity", 0); 
+      }
+    }
+
+    function updateTooltipContent(data, xPosition, yPosition) {
+
+      let tooltipX = xPosition + 10; 
+      const tooltipY = yPosition - tooltipHeight / 2;
+
+      if (tooltipX + tooltipWidth > width) {
+          tooltipX = width - tooltipWidth - 20; 
+      }
+
+        tooltip.style("opacity", 1)
+        .attr("transform", `translate(${tooltipX -200}  ,200)`);
+
+        tooltip.select('.date').text(`${d3.timeFormat("%b %d, %Y")(data.date)}`);
+        tooltip.select('.incoming').text(`Incoming: ${data.incoming} B`);
+        tooltip.select('.outgoing').text(`Outgoing: ${data.outgoing} B`);
+        tooltip.select('.balance').text(`Balance: ${data.balance} B`);
+
+        tooltip.select('rect')
+        .attr('width', tooltipWidth)
+        .attr('height', tooltipHeight);
+      }
+
+      tooltip.append("rect")
+       .attr('class', 'tooltip-rect')
+       .attr('width', tooltipWidth)
+       .attr('height', tooltipHeight)
+       .attr('fill', 'white')
+       .style('opacity', 0.8);
+
+      function onMouseOver(event, d) {
+
+        const dataToShow = d.incoming !== undefined ? d : lastValidData;
+        if (Object.keys(dataToShow).length === 0) {
+          return; 
         }
 
-        svg.on("mousemove", onMouseMove)
-          .on("mouseleave", function() {
-              tooltip.style("opacity", 0);
-              focusLineGroup.style('display', 'none');
-              focusCircleGroup.style('display', 'none');
-          });
+        const [x, y] = d3.pointer(event, svg.node()); 
+        focusLineGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
+        focusCircleGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
+
+
+        focusLineGroup.attr('transform', `translate(${x},0)`);
+        focusCircleGroup.attr('transform', `translate(${x},0)`);
+        focusCircleGroup.select('.circle.incoming').attr('cy', yLeftScale(d.incoming));
+        focusCircleGroup.select('.circle.outgoing').attr('cy', yLeftScale(d.outgoing));
+        focusCircleGroup.select('.circle.balance').attr('cy', yRightScale(d.balance));
+
+        tooltip
+          .style("opacity", 1)
+          .attr("transform", `translate(${x + 10},${y - 10})`); 
+
+        tooltip.selectAll("text").remove(); 
+        tooltip.selectAll("rect").remove(); 
+      
+        tooltip.append("rect")
+          .attr("x", 0)
+          .attr("y", -40)
+          .attr("width", 120)
+          .attr("height", 60)
+          .attr("fill", "white")
+          .style("opacity", 0.7);
+      
+        tooltip.append("text")
+          .attr("x", 5)
+          .attr("y", -20)
+          .text(`${d3.timeFormat("%d %B, %Y")(d.date || lastValidData.date)}`)
+          .attr("font-size", "12px");
+      
+        tooltip.append("text")
+          .attr("x", 5)
+          .attr("y", -5)
+          .text(`Incoming: ${d.incoming || lastValidData.incoming}`)
+          .attr("font-size", "12px");
+      
+        tooltip.append("text")
+          .attr("x", 5)
+          .attr("y", 10)
+          .text(`Outgoing: ${d.outgoing || lastValidData.outgoing}`)
+          .attr("font-size", "12px");
+      
+        tooltip.append("text")
+          .attr("x", 5)
+          .attr("y", 25)
+          .text(`Balance: ${d.balance || lastValidData.balance}`)
+          .attr("font-size", "12px");
+
+          tooltip.attr('transform', `translate(${x - 60},${yLeftScale(Math.max(d.incoming, d.outgoing)) - 80})`);
+      }
     
-        svg.selectAll(".bar")
-          .on("mouseover", onMouseOver)
-          .on("mouseout", onMouseOut);
-        
-        svg.selectAll(".line")
-          .on("mouseover", onMouseOver)
-          .on("mouseout", onMouseOut);
+      function onMouseOut(event, d) {
+        focusLineGroup.style('display', 'none');
+        focusCircleGroup.style('display', 'none');
+
+        tooltip.style("opacity", 0); 
+      }
+
+      svg.on("mousemove", onMouseMove)
+        .on("mouseleave", function() {
+            tooltip.style("opacity", 0);
+            focusLineGroup.style('display', 'none');
+            focusCircleGroup.style('display', 'none');
+        });
+  
+      svg.selectAll(".bar")
+        .on("mouseover", onMouseOver)
+        .on("mouseout", onMouseOut);
+      
+      svg.selectAll(".line")
+        .on("mouseover", onMouseOver)
+        .on("mouseout", onMouseOut);
     }
 
   }, [data]); 
