@@ -194,7 +194,7 @@ const MegaChart = ({ data }) => {
 
           focusCircleGroup.selectAll('circle')
             .data(['incoming', 'outgoing', 'balance'])
-            // .attr('cx', xPos)
+            .attr('cx', xPos)
             .attr('cy', d => {
               if (d === 'incoming') return yLeftScale(closestData.incoming);
               if (d === 'outgoing') return yLeftScale(closestData.outgoing);
@@ -255,15 +255,6 @@ const MegaChart = ({ data }) => {
         }
 
         const [x, y] = d3.pointer(event, svg.node()); 
-        focusLineGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
-        focusCircleGroup.style('display', null).attr('transform', `translate(${xScale(d.date)},0)`);
-
-
-        focusLineGroup.attr('transform', `translate(${x},0)`);
-        focusCircleGroup.attr('transform', `translate(${x},0)`);
-        focusCircleGroup.select('.circle.incoming').attr('cy', yLeftScale(d.incoming));
-        focusCircleGroup.select('.circle.outgoing').attr('cy', yLeftScale(d.outgoing));
-        focusCircleGroup.select('.circle.balance').attr('cy', yRightScale(d.balance));
 
         tooltip
           .style("opacity", 1)
