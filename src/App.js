@@ -3,7 +3,12 @@ import Dropdown from './Dropdown';
 import { mockData } from './data';
 import './App.css';
 import ChartOne from './ChartOne';
+import ChartTwo from './ChartTwo';
+import ChartThree from './ChartThree';
+import MegaChart from './MegaChart';
 import rawData from './chart1Data.json';
+import cryptoData from './chart3Data.json';
+import megaData from './mainChartData.json';
 
 const aaplData = rawData.map(d => ({
   ...d,
@@ -50,14 +55,18 @@ function App() {
 
   return (
     <div className="App">
-      <div class="flex flex-col md:flex-row gap-4 p-4">
-        <div class="flex-1">
-          <div class="flex justify-between mb-4">
-            <div class="w-1/3 bg-gray-200 p-4 rounded">
+      <div className="flex flex-col md:flex-row gap-4 p-4">
+        <div className="flex-1">
+          <div className="flex justify-between mb-4">
+            <div className="w-1/3 bg-gray-200 p-4 rounded z-10">
               <ChartOne aapl={aaplData} />
             </div>
-            <div class="w-1/3 bg-gray-200 p-4 rounded">2</div>
-            <div class="w-1/3 bg-gray-200 p-4 rounded">3</div>
+            <div className="w-1/3 bg-gray-200 p-4 rounded">
+              <ChartTwo aapl={aaplData} />
+            </div>
+            <div className="w-1/3 bg-gray-200 p-4 rounded">
+              <ChartThree crypto={cryptoData} />
+            </div>
           </div>
           <input
             type="text"
@@ -86,7 +95,15 @@ function App() {
                       <td className="px-6 py-4 text-left whitespace-nowrap">{item.dateCreated}</td>
                       <td className="px-6 py-4 text-left whitespace-nowrap">{item.description}</td>
                       <td className="px-6 py-4 text-left whitespace-nowrap">{item.amount}</td>
-                      <td className="px-6 py-4 text-left whitespace-nowrap">{item.status}</td>
+                      <td className="px-6 py-4 text-left whitespace-nowrap">
+                        <span 
+                          className={`inline-block px-2 py-1 rounded-full text-white text-center ${
+                            item.status === 'failed' ? 'bg-red-500' : 'bg-green-500'
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -94,8 +111,8 @@ function App() {
             </div>
           </Dropdown>
         </div>
-        <div class="w-full md:w-64 h-96 bg-gray-300 p-4 rounded md:mb-0">
-          right
+        <div className="w-full md:w-[500px] h-[400px] bg-[#141e27] p-4 rounded md:mb-0 z-10">
+          <MegaChart data={megaData} />
         </div>
       </div>
     </div>
